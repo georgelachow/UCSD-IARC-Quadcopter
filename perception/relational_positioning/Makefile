@@ -4,9 +4,9 @@ LIBS=`pkg-config opencv --cflags --libs`
 OUTPUT=rel_pos
 
 main: main.o roomba.o tracker.o
-	$(CC) $(CFLAGS) -o $(OUTPUT) main.o $(LIBS)
+	$(CC) $(CFLAGS) -o $(OUTPUT) main.o roomba.o tracker.o $(LIBS)
 
-main.o: main.cpp settings.hpp
+main.o: main.cpp settings.hpp tracker.hpp
 	$(CC) $(CFLAGS) -c main.cpp $(LIBS)
 
 roomba.o: roomba.hpp roomba.cpp
@@ -14,9 +14,6 @@ roomba.o: roomba.hpp roomba.cpp
 
 tracker.o: tracker.hpp roomba.hpp helpers.hpp
 	$(CC) $(CFLAGS) -c tracker.cpp $(LIBS)
-
-helpers.o: helpers.hpp helpers.cpp
-	$(CC) $(CFLAGS) -c helpers.cpp $(LIBS)
 
 clean:
 	rm -rf *.o
