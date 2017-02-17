@@ -6,6 +6,7 @@
 
 ### __Comments:__
 * Naive trajectory calculation currently implemented, looks at pre and post images
+..* Will also need to project this trajectory onto the flat surface
 * Naive line projection for distance measurement, draws line from center of camera to center of roomba. 
 
 ### __Todo:__
