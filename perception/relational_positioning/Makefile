@@ -9,11 +9,11 @@ main: main.o roomba.o tracker.o
 main.o: main.cpp settings.hpp tracker.hpp
 	$(CC) $(CFLAGS) -c main.cpp $(LIBS)
 
-roomba.o: roomba.hpp roomba.cpp
-	$(CC) $(CFLAGS) -c roomba.cpp $(LIBS)
-
-tracker.o: tracker.hpp roomba.hpp helpers.hpp
+tracker.o: tracker.cpp tracker.hpp roomba.hpp helpers.hpp
 	$(CC) $(CFLAGS) -c tracker.cpp $(LIBS)
+
+roomba.o: roomba.cpp roomba.hpp
+	$(CC) $(CFLAGS) -c roomba.cpp $(LIBS)
 
 clean:
 	rm -rf *.o
