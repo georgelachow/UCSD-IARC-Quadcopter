@@ -5,6 +5,13 @@ using namespace std;
 using namespace cv;
 
 int main(){
+	double w,h;								// Resolution
+	int frame_count;
+	Mat normal;								// Windows to display
+	Mat pre_frame, post_frame;
+	Point2f camera_center;
+	ThresholdTracker threshTracker;
+
 	cout << CV_VERSION << endl;
 
 	// Setup video feed
@@ -13,27 +20,19 @@ int main(){
 		printf("Failed to capture video!\n");
 		return -1;
 	}
-  double w = cap.get(CV_CAP_PROP_FRAME_WIDTH);
-  double h = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
-
-	cout << "Width: " << w*scale_x<< endl;
-	cout << "Height: " << h*scale_y<< endl;
-  Size frameSize(static_cast<int>(w), static_cast<int>(h));
+  w = cap.get(CV_CAP_PROP_FRAME_WIDTH)*scale_x;
+  h = cap.get(CV_CAP_PROP_FRAME_HEIGHT)*scale_y;
+	cout << "Width: " << w<< endl;
+	cout << "Height: " << h<< endl;
 
 	/*
+  Size frameSize(static_cast<int>(w), static_cast<int>(h));
   VideoWriter vw ("/home/jason/IARC/relational_positioning/BoundingBoxOnColor_GLOSS_EFFECT.avi", CV_FOURCC('P','I','M','1'),20, frameSize, true);
   if(!vw.isOpened()){
     cout << "FAiLED!\n";
     return -1;
   }
 	*/
-
-	// Windows
-	Mat normal, threshold_red, threshold_green, kmeans;
-
-  // Bounding Box / Contours
-  vector<vector<Point>> contours;
-  vector<Vec4i> heirarchy;
 
 	// Sift / Ransac Tracking
 	/*
@@ -54,25 +53,34 @@ int main(){
 	extractor.compute(sift_roomba, keypoints_roomba, descriptors1);
 	*/
 
-	ThresholdTracker threshTracker;
-
 	///////////////////////////////////////////////////
 	// START VIDEO CAPTURE
 	///////////////////////////////////////////////////
+	frame_count = 0;
 	while(true){
-		Mat frame;
-		cap >> frame;
+		cap >> post_frame;
 
 		//////////////////////////////////////////////////
 		// PREPROCESSING
 		//////////////////////////////////////////////////
-		resize(frame, frame, Size(0,0),scale_x,scale_y);
-		normal = frame;
+		resize(post_frame, post_frame, Size(0,0),scale_x,scale_y);
+		camera_center = Point2f((post_frame.cols/2), (post_frame.rows/2));
+		normal = post_frame.clone();
 
 		//////////////////////////////////////////////////
 		// TRESHOLD TRACKING
 		//////////////////////////////////////////////////
-		threshTracker.track(normal);
+		threshTracker.track(post_frame);
+
+		// Distance line from center
+		for(auto roomba = threshTracker.trackedRoombas.begin(); roomba != threshTracker.trackedRoombas.end(); roomba++){
+			line(normal,(*roomba)->getScreenLoc(), camera_center, (*roomba)->color, 2);
+		}
+
+		// Trajectory
+		for(auto roomba = threshTracker.trackedRoombas.begin(); roomba != threshTracker.trackedRoombas.end(); roomba++){
+			(*roomba)->updateTrajectory();
+		}
 		threshTracker.draw(normal);
 
 		//////////////////////////////////////////////////
@@ -145,10 +153,8 @@ int main(){
 	  line( img_matches, arena_corners[3] + Point2f( sift_roomba.cols, 0), arena_corners[0] + Point2f( sift_roomba.cols, 0), Scalar( 0, 0, 255), 2 );
 		*/
 
-		// Center point of camera
 		/*
 		double offset_x = sift_roomba.cols;
-		Point2f camera_center((frame.rows/2), (frame.cols/2) + offset_x);
 		*/
 
 		// Center of sift box
@@ -166,7 +172,7 @@ int main(){
 		*/
 
 		/////////////////////////////////////////////////
-		// DEBUG ON-SCREEN TEXT
+		// SCREEN DEBUG
 		/////////////////////////////////////////////////
 		/*
 		snprintf(sift_ransac, 100, "SIFT_RANSAC Center:       (%d, %d)", (int)sift_center.x, (int)sift_center.y);
@@ -178,13 +184,11 @@ int main(){
 		////////////////////////////////////////////////
     // WINDOW DISPLAY
 		////////////////////////////////////////////////
-		if(!frame.empty()){
+		if(!post_frame.empty()){
 			imshow("Normal", normal);
-      //imshow("Threshold", threshold_red);
-			//imshow("Matches", img_matches);
-      //imshow("Threshold2", threshold_green);
-      //trackbar.show();
       //vw.write(normal);
+
+			pre_frame = normal.clone();
 			frame_count++;
     }
 

@@ -48,8 +48,8 @@ void ThresholdTracker::track(cv::Mat src){
   boundRect = boundingRect(Mat(contour_poly));
 
   // Calculate screen location and see if its a new roomba that was found
-  center_x = (boundRect.br().x - boundRect.tl().x) / 2;
-  center_y = (boundRect.br().y - boundRect.tl().y) / 2;
+  center_x = boundRect.br().x - (boundRect.br().x - boundRect.tl().x) / 2;
+  center_y = boundRect.tl().y + (boundRect.br().y - boundRect.tl().y) / 2;
 
   // Temp variable for now
   bool found = false;
@@ -61,23 +61,26 @@ void ThresholdTracker::track(cv::Mat src){
     if(d < distThreshold){
       found = true;
       (*roomba)->boundRect = boundRect;
-      (*roomba)->setScreenLoc(center_x,center_y);
+      (*roomba)->updateScreenLoc(center_x,center_y);
     }
   }
 
   if(!found){
+    std::cout << "NEW ROOMBA!" << std::endl;
     Roomba* new_Roomba = new Roomba();
-    new_Roomba->setScreenLoc(center_x, center_y);
+    new_Roomba->updateScreenLoc(center_x, center_y);
     new_Roomba->boundRect = boundRect;
     trackedRoombas.push_back(new_Roomba);
   }
 
 }
 
-void ThresholdTracker::draw(cv::Mat& dst){
+void ThresholdTracker::draw(cv::Mat dst){
 	// Draw bounding boxes for each tracked Roomba
-  for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++)
+  for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++){
     (*roomba)->drawBound(dst);
+    (*roomba)->drawTrajectory(dst,200);
+  }
 }
 
 void ThresholdTracker::setLower(int v1, int v2, int v3){

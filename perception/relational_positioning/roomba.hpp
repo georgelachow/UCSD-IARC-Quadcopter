@@ -4,20 +4,26 @@
 #include <vector>
 #include <utility>
 #include <stdlib.h>
+#include "helpers.hpp"
 
 class Roomba{
 public:
   Roomba();
   ~Roomba();
 
-  void setScreenLoc(int x, int y);
+  cv::Point2f getScreenLoc();
+  void updateScreenLoc(int x, int y);
+  void updateTrajectory();
   void drawBound(cv::Mat& dst);
+  void drawTrajectory(cv::Mat& dst,int scale);
 
   cv::Scalar color;
   cv::Rect boundRect;
-
   int screenLoc_x, screenLoc_y;
-  std::vector<std::pair<std::vector<int>,std::vector<int> > > trajectory;
+  unsigned int locationTrackLength;
+
+  std::vector<cv::Point2f> previousLocations;
+  cv::Vec2f trajectory;
 };
 
 #endif /* ROOMBA_H */
