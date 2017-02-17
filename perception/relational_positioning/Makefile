@@ -2,9 +2,10 @@ CC=g++ -std=c++11
 CFLAGS=-Wall -g
 LIBS=`pkg-config opencv --cflags --libs`
 OUTPUT=rel_pos
+OBJECTS=main.o roomba.o tracker.o helpers.o
 
-main: main.o roomba.o tracker.o helpers.o
-	$(CC) $(CFLAGS) -o $(OUTPUT) main.o roomba.o tracker.o helpers.o $(LIBS)
+main: $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(OUTPUT) $(OBJECTS) $(LIBS)
 
 main.o: main.cpp settings.hpp tracker.hpp
 	$(CC) $(CFLAGS) -c main.cpp $(LIBS)
