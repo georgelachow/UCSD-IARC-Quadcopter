@@ -34,8 +34,8 @@ void ThresholdTracker::track(const cv::Mat src){
   boundRect = boundingRect(Mat(contour_poly));
 
   // Calculate screen location and see if its a new roomba that was found
-	center_x = (boundRect.br().x - boundRect.tl().x) / 2;
-	center_y = (boundRect.br().y - boundRect.tl().y) / 2;
+  center_x = (boundRect.br().x - boundRect.tl().x) / 2;
+  center_y = (boundRect.br().y - boundRect.tl().y) / 2;
 
   for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++){
 
