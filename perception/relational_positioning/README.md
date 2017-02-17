@@ -7,6 +7,7 @@
 ### __Comments:__
 * Naive trajectory calculation currently implemented, looks at pre and post images
 ..* Will also need to project this trajectory onto the flat surface
+..* Possible improvement: Trajectory prediction, predict trajectory based upon incoming collision of another roomba.
 * Naive line projection for distance measurement, draws line from center of camera to center of roomba. 
 
 ### __Todo:__
