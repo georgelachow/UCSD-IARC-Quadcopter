@@ -8,10 +8,20 @@ ThresholdTracker::ThresholdTracker(){
   lower_threshold = {160,100,0};
   upper_threshold = {179,255,255};
   areaThreshold = 500;
-  distThreshold = 50;
+  distThreshold = 25;
 }
 
-void ThresholdTracker::track(const cv::Mat src){
+ThresholdTracker::~ThresholdTracker(){
+  // Remove all tracked roombas
+  for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++){
+    delete (*roomba);
+    (*roomba) = NULL;
+  }
+
+  trackedRoombas.clear();
+}
+
+void ThresholdTracker::track(cv::Mat src){
   double largestCont;
   int largest_i = 0;
   int center_x, center_y;
@@ -20,7 +30,11 @@ void ThresholdTracker::track(const cv::Mat src){
   vector<Point> contour_poly;                   // Polygon of contour
   Rect boundRect;
 
-  // Find largest contour
+  // Convert to HSV and perform threshold
+  cvtColor(src, src, COLOR_BGR2HSV);
+	inRange(src, lower_threshold, upper_threshold, src);
+
+  // Find largest contour from thresholded color
   findContours(src, contours, heirarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(-1,-1));
   largestCont = contourArea(contours[0]);
   for(unsigned int i =0; i < contours.size(); i++){
@@ -37,15 +51,33 @@ void ThresholdTracker::track(const cv::Mat src){
   center_x = (boundRect.br().x - boundRect.tl().x) / 2;
   center_y = (boundRect.br().y - boundRect.tl().y) / 2;
 
-  for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++){
+  // Temp variable for now
+  bool found = false;
 
+  // Update
+  for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++){
+    double d = dist((*roomba)->screenLoc_x, (*roomba)->screenLoc_y, center_x, center_y);
+
+    if(d < distThreshold){
+      found = true;
+      (*roomba)->boundRect = boundRect;
+      (*roomba)->setScreenLoc(center_x,center_y);
+    }
   }
+
+  if(!found){
+    Roomba* new_Roomba = new Roomba();
+    new_Roomba->setScreenLoc(center_x, center_y);
+    new_Roomba->boundRect = boundRect;
+    trackedRoombas.push_back(new_Roomba);
+  }
+
 }
 
 void ThresholdTracker::draw(cv::Mat& dst){
 	// Draw bounding boxes for each tracked Roomba
   for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++)
-    rectangle(dst, roomba->boundRect.tl(), roomba->boundRect.br(), roomba->color,2, 8, 0);
+    (*roomba)->drawBound(dst);
 }
 
 void ThresholdTracker::setLower(int v1, int v2, int v3){

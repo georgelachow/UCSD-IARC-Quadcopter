@@ -1,9 +1,8 @@
 #include "settings.hpp"
 #include "tracker.hpp"
+
 using namespace std;
 using namespace cv;
-
-void hsv_threshold(Mat src, Mat& dst, InputArray lower, InputArray upper);
 
 int main(){
 	cout << CV_VERSION << endl;
@@ -55,6 +54,8 @@ int main(){
 	extractor.compute(sift_roomba, keypoints_roomba, descriptors1);
 	*/
 
+	ThresholdTracker threshTracker;
+
 	///////////////////////////////////////////////////
 	// START VIDEO CAPTURE
 	///////////////////////////////////////////////////
@@ -63,10 +64,20 @@ int main(){
 		cap >> frame;
 
 		//////////////////////////////////////////////////
-		// Preprocessing
+		// PREPROCESSING
 		//////////////////////////////////////////////////
 		resize(frame, frame, Size(0,0),scale_x,scale_y);
 		normal = frame;
+
+		//////////////////////////////////////////////////
+		// TRESHOLD TRACKING
+		//////////////////////////////////////////////////
+		threshTracker.track(normal);
+		threshTracker.draw(normal);
+
+		//////////////////////////////////////////////////
+		// SIFT TRACKING
+		//////////////////////////////////////////////////
 
 		// Empty Descriptor matches
 		/*
@@ -181,11 +192,4 @@ int main(){
 		if((waitKey(1)&(0xff)) == 27) break;
 	}
 	return 0;
-}
-
-void hsv_threshold(Mat src, Mat& dst, InputArray lower, InputArray upper){
-	// Convert to HSV if not already
-	cvtColor(src, dst, COLOR_BGR2HSV);
-	// Threshold
-	inRange(dst, lower, upper, dst);
 }

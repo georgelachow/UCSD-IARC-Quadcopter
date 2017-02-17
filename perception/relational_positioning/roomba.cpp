@@ -5,7 +5,6 @@ Roomba::Roomba(){
   color = Scalar(rand() % 256, rand() % 256, rand() % 256);
   screenLoc_x = 0;
   screenLoc_y = 0;
-
 }
 
 Roomba::~Roomba(){
