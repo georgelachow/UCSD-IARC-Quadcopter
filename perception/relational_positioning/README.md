@@ -1,7 +1,7 @@
 # Roomba tracking and relational positioning 
 
 ### __Dependencies:__
-1. opencv 2.4.12
+1. opencv 3.20
 2. cuda
 
 ### __Todo:__
