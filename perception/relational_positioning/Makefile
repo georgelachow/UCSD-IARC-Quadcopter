@@ -13,7 +13,7 @@ main.o: main.cpp settings.hpp tracker.hpp
 tracker.o: tracker.cpp tracker.hpp roomba.hpp helpers.hpp
 	$(CC) $(CFLAGS) -c tracker.cpp $(LIBS)
 
-roomba.o: roomba.cpp roomba.hpp
+roomba.o: roomba.cpp roomba.hpp helpers.hpp
 	$(CC) $(CFLAGS) -c roomba.cpp $(LIBS)
 
 helpers.o: helpers.cpp helpers.hpp
