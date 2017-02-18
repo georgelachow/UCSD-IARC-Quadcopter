@@ -13,7 +13,7 @@
 ### __Todo:__
 1. Implement Trajectory calculations
 2. Tune threshold parameter for multi object tracking based upon bounding box area and center point distance comparison
-3. Modularize SIFT Tracking
+3. Modularize SIFT Tracking, possible use of canny edge detection for edge keypoint matching and noise removal.
 4. Cleanup code
 5. Implement more possible tracking algorithms, FlowNet, Sparse Tracker, SiftFLOW, custom neural network
 6. Gather more data, in various situations
