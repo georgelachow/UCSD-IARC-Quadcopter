@@ -7,13 +7,22 @@ For setting it up:
 Install ros-indigo with gazebo2
 
 Now edit ~/.bashrc and add the following lines at the end of the file. 
-Edit catkin_ws with your catkin_ws name
+
+Edit catkin_ws with your catkin_ws name 
+
+
 
 source ~/catkin_ws/devel/setup.bash
+
 export ROS_WORKSPACE=~/catkin_ws/
+
 export ROS_PACKAGE_PATH+=~/catkin_ws/src
+
 export GAZEBO_MODEL_PATH=~/gazebo_models/
+
 export GAZEBO_RESOURCE_PATH=/usr/share/gazebo-2.2/worlds/
+
+
 
 to launch sim
 
