@@ -6,7 +6,8 @@ For setting it up:
 
 Install ros-indigo with gazebo2
 
-Now edit ~/.bashrc and add the following lines at the end of the file. Edit catkin_ws with your catkin_ws name
+Now edit ~/.bashrc and add the following lines at the end of the file. 
+Edit catkin_ws with your catkin_ws name
 
 source ~/catkin_ws/devel/setup.bash
 export ROS_WORKSPACE=~/catkin_ws/
