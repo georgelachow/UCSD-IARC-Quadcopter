@@ -31,6 +31,7 @@ public:
   void setUpper(int v1, int v2, int v3);
 
   std::vector<Roomba*> trackedRoombas;
+  cv::Mat threshFrame;
 private:
   // Threshold values
   std::vector<int> lower_threshold;

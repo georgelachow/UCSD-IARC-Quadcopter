@@ -11,6 +11,7 @@ int main(){
 	Mat pre_frame, post_frame;
 	Point2f camera_center;
 	ThresholdTracker threshTracker;
+	ThresholdTracker threshTracker2;
 	Distribution* threshDistribution;
 
 	cout << CV_VERSION << endl;
@@ -194,6 +195,7 @@ int main(){
 		////////////////////////////////////////////////
 		if(!post_frame.empty()){
 			imshow("Normal", normal);
+			imshow("Threshold", threshTracker.threshFrame);
 			threshDistribution->show("Thresh Distribution");
       //vw.write(normal);
 
