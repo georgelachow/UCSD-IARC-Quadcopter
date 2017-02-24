@@ -146,3 +146,19 @@ void ThresholdTracker::setUpper(int v1, int v2, int v3){
   upper_threshold.push_back(v2);
   upper_threshold.push_back(v3);
 }
+
+KFTracker::KFTracker(){
+
+}
+
+KFTracker::~KFTracker(){
+
+}
+
+void KFTracker::track(cv::Mat src){
+  
+}
+
+void KFTracker::draw(cv::Mat dst){
+
+}

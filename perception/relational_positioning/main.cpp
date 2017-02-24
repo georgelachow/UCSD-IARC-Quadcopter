@@ -1,4 +1,4 @@
-#include "settings.hpp"
+include "settings.hpp"
 #include "tracker.hpp"
 
 using namespace std;
@@ -11,7 +11,6 @@ int main(){
 	Mat pre_frame, post_frame;
 	Point2f camera_center;
 	ThresholdTracker threshTracker;
-	ThresholdTracker threshTracker2;
 	Distribution* threshDistribution;
 
 	cout << CV_VERSION << endl;

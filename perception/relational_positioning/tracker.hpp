@@ -25,8 +25,14 @@ class ThresholdTracker: public RoombaTracker{
 public:
   ThresholdTracker();
   ~ThresholdTracker();
+
+  // Track (Update function on tracker)
   void track(cv::Mat src);
+
+  // Draw (More of a debug feature)
   void draw(cv::Mat dst);
+
+  // Clean up roombas
   void removeDead();
   void setLower(int v1, int v2, int v3);
   void setUpper(int v1, int v2, int v3);
@@ -41,5 +47,18 @@ private:
   // Hyperparameters
   int areaThreshold;
   double distThreshold;
+};
+
+class KFTracker: public RoombaTracker{
+public:
+  KFTracker();
+  ~KFTracker();
+
+  void track(cv::Mat src);
+  void draw(cv::Mat dst);
+
+  std::vector<Roomba*> trackedRoombas;
+private:
+
 };
 #endif /* TRACKER_H */
