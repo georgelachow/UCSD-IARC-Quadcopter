@@ -3,6 +3,35 @@
 using namespace std;
 using namespace cv;
 
+Distribution::Distribution(int x, int y){
+  distribution = Mat(Size(x,y), CV_8U, Scalar(0));
+  decayVal = 15;
+}
+
+Distribution::~Distribution(){
+}
+
+void Distribution::decay(){
+  uchar* p;
+
+  for(int i = 0; i < distribution.rows; i++){
+    p = distribution.ptr<uchar>(i);
+
+    for(int j = 0; j < distribution.cols; j++){
+      uchar element = p[j];
+      if(element > 0){
+        p[j] = element > decayVal ? element - decayVal: 0;
+      }
+    }
+  }
+
+}
+
+void Distribution::show(const char* winName){
+  decay();
+  imshow(winName, distribution);
+}
+
 ThresholdTracker::ThresholdTracker(){
   // Default Treshold
   lower_threshold = {160,100,0};
@@ -58,6 +87,7 @@ void ThresholdTracker::track(cv::Mat src){
   for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++){
     double d = dist((*roomba)->screenLoc_x, (*roomba)->screenLoc_y, center_x, center_y);
 
+    // Check to see if the center of the roomba is close to a previous location
     if(d < distThreshold){
       found = true;
       (*roomba)->boundRect = boundRect;
@@ -65,6 +95,7 @@ void ThresholdTracker::track(cv::Mat src){
     }
   }
 
+  // If there is no roomba close to this point, then chances are its a new roomba
   if(!found){
     std::cout << "NEW ROOMBA!" << std::endl;
     Roomba* new_Roomba = new Roomba();
@@ -72,7 +103,6 @@ void ThresholdTracker::track(cv::Mat src){
     new_Roomba->boundRect = boundRect;
     trackedRoombas.push_back(new_Roomba);
   }
-
 }
 
 void ThresholdTracker::draw(cv::Mat dst){

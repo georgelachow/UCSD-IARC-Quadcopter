@@ -11,6 +11,7 @@ int main(){
 	Mat pre_frame, post_frame;
 	Point2f camera_center;
 	ThresholdTracker threshTracker;
+	Distribution* threshDistribution;
 
 	cout << CV_VERSION << endl;
 
@@ -22,6 +23,10 @@ int main(){
 	}
   w = cap.get(CV_CAP_PROP_FRAME_WIDTH)*scale_x;
   h = cap.get(CV_CAP_PROP_FRAME_HEIGHT)*scale_y;
+
+	threshDistribution = new Distribution(w,h);
+	threshDistribution->decayVal = 1;
+
 	cout << "Width: " << w<< endl;
 	cout << "Height: " << h<< endl;
 
@@ -72,15 +77,18 @@ int main(){
 		//////////////////////////////////////////////////
 		threshTracker.track(post_frame);
 
-		// Distance line from center
+		// Get Tracked Roombas and perform calculations
 		for(auto roomba = threshTracker.trackedRoombas.begin(); roomba != threshTracker.trackedRoombas.end(); roomba++){
+			// Distance line from center
 			line(normal,(*roomba)->getScreenLoc(), camera_center, (*roomba)->color, 2);
+
+			// Trajectory
+			(*roomba)->updateTrajectory();
+
+			// Distribution Update
+			threshDistribution->distribution.at<uchar>((*roomba)->getScreenLoc()) = 255;
 		}
 
-		// Trajectory
-		for(auto roomba = threshTracker.trackedRoombas.begin(); roomba != threshTracker.trackedRoombas.end(); roomba++){
-			(*roomba)->updateTrajectory();
-		}
 		threshTracker.draw(normal);
 
 		//////////////////////////////////////////////////
@@ -186,6 +194,7 @@ int main(){
 		////////////////////////////////////////////////
 		if(!post_frame.empty()){
 			imshow("Normal", normal);
+			threshDistribution->show("Thresh Distribution");
       //vw.write(normal);
 
 			pre_frame = normal.clone();

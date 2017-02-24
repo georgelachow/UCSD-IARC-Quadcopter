@@ -4,6 +4,17 @@
 #include "helpers.hpp"
 #include <opencv2/opencv.hpp>
 
+class Distribution{
+public:
+  Distribution(int x, int y);
+  ~Distribution();
+  void show(const char* winName);
+  void decay();
+
+  cv::Mat distribution;
+  unsigned int decayVal;
+};
+
 class RoombaTracker{
 public:
   virtual void track(const cv::Mat src) = 0;

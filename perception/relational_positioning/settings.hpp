@@ -12,7 +12,7 @@
 #include <vector>
 
 // Directories
-const std::string video_dir = std::string("/home/jason/IARC/relational_positioning/dataset/roomba_static_2m.avi");
+const std::string video_dir = std::string("/home/jason/IARC/data/roomba_static_2m.avi");
 
 // Scales
 const double scale_x = 0.25;
