@@ -20,6 +20,7 @@ public:
   cv::Scalar color;
   cv::Rect boundRect;
   int screenLoc_x, screenLoc_y;
+  unsigned int life;
   unsigned int locationTrackLength;
 
   std::vector<cv::Point2f> previousLocations;

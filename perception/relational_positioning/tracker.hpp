@@ -27,6 +27,7 @@ public:
   ~ThresholdTracker();
   void track(cv::Mat src);
   void draw(cv::Mat dst);
+  void removeDead();
   void setLower(int v1, int v2, int v3);
   void setUpper(int v1, int v2, int v3);
 

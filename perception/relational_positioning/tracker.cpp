@@ -36,7 +36,7 @@ ThresholdTracker::ThresholdTracker(){
   // Default Treshold
   lower_threshold = {28,92,0};
   upper_threshold = {255,255,255};
-  areaThreshold = 3000;
+  areaThreshold = 1000;
   distThreshold = 25;
 }
 
@@ -99,6 +99,7 @@ void ThresholdTracker::track(cv::Mat src){
     }
   }
 
+
 }
 
 void ThresholdTracker::draw(cv::Mat dst){
@@ -107,6 +108,29 @@ void ThresholdTracker::draw(cv::Mat dst){
     (*roomba)->drawBound(dst);
     (*roomba)->drawTrajectory(dst,200);
   }
+}
+
+void ThresholdTracker::removeDead(){
+  // If any roombas are dead remove them
+  std::vector<int> deadIndices;
+  std::vector<Roomba*>::iterator it;
+
+  // Find indices of dead roombas and delete them
+  it = trackedRoombas.begin();
+  for(unsigned int i = 0; i < trackedRoombas.size(); i++){
+    Roomba *roomba = *(it+i);
+    if(roomba->life == 0){
+      delete roomba;
+      roomba = NULL;
+      deadIndices.push_back(i);
+    }
+  }
+
+  // Now remove null pointers in trackedRoombas
+  for(auto jt = deadIndices.begin(); jt != deadIndices.end(); jt++){
+    trackedRoombas.erase(it + (*jt));
+  }
+
 }
 
 void ThresholdTracker::setLower(int v1, int v2, int v3){

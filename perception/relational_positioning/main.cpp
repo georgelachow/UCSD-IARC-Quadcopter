@@ -7,7 +7,7 @@ using namespace cv;
 int main(){
 	double w,h;								// Resolution
 	int frame_count;
-	Mat normal;								// Windows to display
+	Mat normal;
 	Mat pre_frame, post_frame;
 	Point2f camera_center;
 	ThresholdTracker threshTracker;
@@ -89,6 +89,9 @@ int main(){
 			// Distribution Update
 			threshDistribution->distribution.at<uchar>((*roomba)->getScreenLoc()) = 255;
 		}
+
+		// Roomba cleanup
+		threshTracker.removeDead();
 
 		threshTracker.draw(normal);
 
