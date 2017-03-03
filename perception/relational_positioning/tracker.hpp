@@ -34,6 +34,7 @@ public:
 
   // Clean up roombas
   void removeDead();
+  void decayTrackedRoombas();
   void setLower(int v1, int v2, int v3);
   void setUpper(int v1, int v2, int v3);
 

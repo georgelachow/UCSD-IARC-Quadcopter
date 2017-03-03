@@ -8,12 +8,14 @@ using namespace cv;
 int main(){
 	double w,h;								// Resolution
 	int frame_count;
-	Mat normal;
+	Mat normal, stitched;
 	Mat pre_frame, post_frame;
+	Mat debug;
 	Point2f camera_center;
 	ThresholdTracker threshTracker;
 	Distribution* threshDistribution;
 	vector<cv::Mat> toStitch;
+	char str_buffer[255] = {0};
 
 	cout << CV_VERSION << endl;
 
@@ -68,11 +70,13 @@ int main(){
 		cap >> post_frame;
 
 		//////////////////////////////////////////////////
-		// PREPROCESSING
+		// PREPROCESSING / OTHERS
 		//////////////////////////////////////////////////
 		resize(post_frame, post_frame, Size(0,0),scale_x,scale_y);
 		camera_center = Point2f((post_frame.cols/2), (post_frame.rows/2));
 		normal = post_frame.clone();
+		debug = Mat(h,w, CV_8UC3, Scalar(0,0,0));
+		threshDistribution->decay();
 
 		//////////////////////////////////////////////////
 		// TRESHOLD TRACKING
@@ -92,9 +96,7 @@ int main(){
 			threshDistribution->distribution.at<uchar>((*roomba)->getScreenLoc()) = 255;
 		}
 
-		// Roomba cleanup
-		threshTracker.removeDead();
-
+		// Draw
 		threshTracker.draw(normal);
 
 		//////////////////////////////////////////////////
@@ -189,28 +191,24 @@ int main(){
 		// SCREEN DEBUG
 		/////////////////////////////////////////////////
 		/*
-		snprintf(sift_ransac, 100, "SIFT_RANSAC Center:       (%d, %d)", (int)sift_center.x, (int)sift_center.y);
-		snprintf(hsv_thresh, 100, "HSV_THRESH_CONTOUR Center: (%d, %d)", (int)boundrect_center.x, (int)boundrect_center.y);
+		snprintf(str_buffer, 255, "SIFT_RANSAC Center:       (%d, %d)", (int)sift_center.x, (int)sift_center.y);
 		putText(img_matches, sift_ransac, cvPoint(5,110), FONT_HERSHEY_COMPLEX_SMALL, 0.65, cvScalar(255,255,255),1, CV_AA);
+		snprintf(str_buffer, 255, "HSV_THRESH_CONTOUR Center: (%d, %d)", (int)boundrect_center.x, (int)boundrect_center.y);
 		putText(img_matches, hsv_thresh, cvPoint(5,130), FONT_HERSHEY_COMPLEX_SMALL, 0.65, cvScalar(255,255,255),1, CV_AA);
 		*/
+		snprintf(str_buffer, 255, "Roomba Count, ThresholdTracker: %d", (int)threshTracker.trackedRoombas.size());
+		putText(debug, str_buffer, cvPoint(5,130), FONT_HERSHEY_COMPLEX_SMALL, 1.00, cvScalar(255,255,255),1, CV_AA);
 
 		////////////////////////////////////////////////
     // WINDOW DISPLAY
 		////////////////////////////////////////////////
 		if(!post_frame.empty()){
-			//imshow("Normal", normal);
-			//imshow("Threshold", threshTracker.threshFrame);
-			//threshDistribution->show("Thresh Distribution");
-      //vw.write(normal);
-
 			toStitch.clear();
 			toStitch.push_back(normal);
 			toStitch.push_back(threshDistribution->distribution);
 			toStitch.push_back(threshTracker.threshFrame);
-
-			cv::Mat stitched = stitch(toStitch);
-
+			toStitch.push_back(debug);
+			stitched = stitch(toStitch);
 			imshow("Display", stitched);
 
 			pre_frame = normal.clone();

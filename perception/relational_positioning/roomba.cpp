@@ -5,7 +5,7 @@ Roomba::Roomba(){
   color = Scalar(rand() % 256, rand() % 256, rand() % 256);
   screenLoc_x = 0;
   screenLoc_y = 0;
-  life = 5;
+  life = 15;
   locationTrackLength = 8;
 }
 
@@ -20,7 +20,6 @@ Point2f Roomba::getScreenLoc(){
 void Roomba::updateScreenLoc(int x, int y){
   screenLoc_x = x;
   screenLoc_y = y;
-  life = life > 0 ? life--: 0;
 
   if(previousLocations.size() < locationTrackLength)
     previousLocations.push_back(Point2f(x,y));

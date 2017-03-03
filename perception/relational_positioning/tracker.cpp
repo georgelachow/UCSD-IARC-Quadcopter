@@ -28,16 +28,15 @@ void Distribution::decay(){
 }
 
 void Distribution::show(const char* winName){
-  decay();
   imshow(winName, distribution);
 }
 
 ThresholdTracker::ThresholdTracker(){
   // Default Treshold
-  lower_threshold = {28,92,0};
-  upper_threshold = {179,255,255};
-  areaThreshold = 10;
-  distThreshold = 25;
+  lower_threshold = {25,92,0};      // Default on green threshold
+  upper_threshold = {80,255,255};
+  areaThreshold = 30;
+  distThreshold = 20;
 }
 
 ThresholdTracker::~ThresholdTracker(){
@@ -50,13 +49,21 @@ ThresholdTracker::~ThresholdTracker(){
   trackedRoombas.clear();
 }
 
+
 void ThresholdTracker::track(cv::Mat src){
   int center_x, center_y;                       // Center of contour boundRect
   double ca;                                    // Contour area
+  bool found;
   std::vector<std::vector<cv::Point>> contours; // Contours of thresholded
   std::vector<cv::Vec4i> heirarchy;
   vector<Point> contour_poly;                   // Polygon of contour
   Rect boundRect;
+
+  // Since track acts as an update function, we need to decay our roomba life per update
+  decayTrackedRoombas();
+
+  // Remove the dead.
+  removeDead();
 
   // Convert to HSV and perform threshold
   cvtColor(src, threshFrame, COLOR_BGR2HSV);
@@ -76,7 +83,7 @@ void ThresholdTracker::track(cv::Mat src){
 
       // Search to see if this center point is close to another center point, if so
       // then chances are it is the same roomba.
-      bool found = false;
+      found = false;
       for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++){
         double d = dist((*roomba)->screenLoc_x, (*roomba)->screenLoc_y, center_x, center_y);
 
@@ -88,10 +95,8 @@ void ThresholdTracker::track(cv::Mat src){
           (*roomba)->updateScreenLoc(center_x,center_y);
         }
       }
-
       // If there is no roomba close to this point, then chances are its a new roomba
       if(!found){
-        std::cout << "NEW ROOMBA!" << std::endl;
         Roomba* new_Roomba = new Roomba();
         new_Roomba->updateScreenLoc(center_x, center_y);
         new_Roomba->boundRect = boundRect;
@@ -99,8 +104,6 @@ void ThresholdTracker::track(cv::Mat src){
       }
     }
   }
-
-
 }
 
 void ThresholdTracker::draw(cv::Mat dst){
@@ -113,25 +116,28 @@ void ThresholdTracker::draw(cv::Mat dst){
 
 void ThresholdTracker::removeDead(){
   // If any roombas are dead remove them
-  std::vector<int> deadIndices;
   std::vector<Roomba*>::iterator it;
+  std::vector<Roomba*> updatedTracked;
 
   // Find indices of dead roombas and delete them
-  it = trackedRoombas.begin();
   for(unsigned int i = 0; i < trackedRoombas.size(); i++){
-    Roomba *roomba = *(it+i);
-    if(roomba->life == 0){
-      delete roomba;
-      roomba = NULL;
-      deadIndices.push_back(i);
+    Roomba *roomba= trackedRoombas[i];
+    if(roomba->life > 0)
+      updatedTracked.push_back(roomba);
+    else{
+      delete trackedRoombas[i];
+      roomba = 0;
     }
   }
+  //trackedRoombas.clear();
+  trackedRoombas = updatedTracked;
 
-  // Now remove null pointers in trackedRoombas
-  for(auto jt = deadIndices.begin(); jt != deadIndices.end(); jt++){
-    trackedRoombas.erase(it + (*jt));
+}
+
+void ThresholdTracker::decayTrackedRoombas(){
+  for(auto it = trackedRoombas.begin(); it != trackedRoombas.end(); it++){
+    (*it)->life = (*it)->life > 0 ? (*it)->life - 1 : 0;
   }
-
 }
 
 void ThresholdTracker::setLower(int v1, int v2, int v3){
