@@ -1,5 +1,6 @@
-include "settings.hpp"
+#include "settings.hpp"
 #include "tracker.hpp"
+#include "helpers.hpp"
 
 using namespace std;
 using namespace cv;
@@ -12,6 +13,7 @@ int main(){
 	Point2f camera_center;
 	ThresholdTracker threshTracker;
 	Distribution* threshDistribution;
+	vector<cv::Mat> toStitch;
 
 	cout << CV_VERSION << endl;
 
@@ -80,6 +82,7 @@ int main(){
 		// Get Tracked Roombas and perform calculations
 		for(auto roomba = threshTracker.trackedRoombas.begin(); roomba != threshTracker.trackedRoombas.end(); roomba++){
 			// Distance line from center
+			// Just draw the trajectory
 			line(normal,(*roomba)->getScreenLoc(), camera_center, (*roomba)->color, 2);
 
 			// Trajectory
@@ -196,10 +199,19 @@ int main(){
     // WINDOW DISPLAY
 		////////////////////////////////////////////////
 		if(!post_frame.empty()){
-			imshow("Normal", normal);
-			imshow("Threshold", threshTracker.threshFrame);
-			threshDistribution->show("Thresh Distribution");
+			//imshow("Normal", normal);
+			//imshow("Threshold", threshTracker.threshFrame);
+			//threshDistribution->show("Thresh Distribution");
       //vw.write(normal);
+
+			toStitch.clear();
+			toStitch.push_back(normal);
+			toStitch.push_back(threshDistribution->distribution);
+			toStitch.push_back(threshTracker.threshFrame);
+
+			cv::Mat stitched = stitch(toStitch);
+
+			imshow("Display", stitched);
 
 			pre_frame = normal.clone();
 			frame_count++;

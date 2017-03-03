@@ -35,8 +35,8 @@ void Distribution::show(const char* winName){
 ThresholdTracker::ThresholdTracker(){
   // Default Treshold
   lower_threshold = {28,92,0};
-  upper_threshold = {255,255,255};
-  areaThreshold = 1000;
+  upper_threshold = {179,255,255};
+  areaThreshold = 10;
   distThreshold = 25;
 }
 
@@ -81,6 +81,7 @@ void ThresholdTracker::track(cv::Mat src){
         double d = dist((*roomba)->screenLoc_x, (*roomba)->screenLoc_y, center_x, center_y);
 
         // Check to see if the center of the roomba is close to a previous location
+        // Used for maintaining already instantiated tracked roombas
         if(d < distThreshold){
           found = true;
           (*roomba)->boundRect = boundRect;
@@ -156,7 +157,7 @@ KFTracker::~KFTracker(){
 }
 
 void KFTracker::track(cv::Mat src){
-  
+
 }
 
 void KFTracker::draw(cv::Mat dst){

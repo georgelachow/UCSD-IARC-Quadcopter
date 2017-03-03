@@ -12,11 +12,11 @@
 #include <vector>
 
 // Directories
-const std::string video_dir = std::string("/home/jason/IARC/data/roomba_static_2m.avi");
+const std::string video_dir = std::string("/home/jason/IARC/data/hexagon/3m_5shexroomba.avi");
 
 // Scales
-const double scale_x = 0.25;
-const double scale_y = 0.25;
+const double scale_x = 0.75;
+const double scale_y = 0.75;
 
 // Set HSV threshold
 std::vector<int> red_lower = {160,100,0};
