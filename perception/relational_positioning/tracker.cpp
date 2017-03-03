@@ -36,7 +36,7 @@ ThresholdTracker::ThresholdTracker(){
   lower_threshold = {25,92,0};      // Default on green threshold
   upper_threshold = {80,255,255};
   areaThreshold = 30;
-  distThreshold = 10; // If roomba contour is < disThreshold
+  distThreshold = 20; // If roomba contour is < disThreshold
 }
 
 ThresholdTracker::~ThresholdTracker(){

@@ -9,6 +9,7 @@
 class Roomba{
 public:
   Roomba();
+  Roomba(const Roomba& copy);
   ~Roomba();
 
   cv::Point2f getScreenLoc();
@@ -25,6 +26,7 @@ public:
 
   std::vector<Roomba> previousStates;
   cv::Vec2f trajectory;
+
 };
 
 #endif /* ROOMBA_H */

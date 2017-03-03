@@ -5,8 +5,19 @@ Roomba::Roomba(){
   color = Scalar(rand() % 256, rand() % 256, rand() % 256);
   screenLoc_x = 0;
   screenLoc_y = 0;
-  life = 15;
+  life = 5;
   locationTrackLength = 8;
+}
+
+Roomba::Roomba(const Roomba& copy){
+  color = copy.color;
+  screenLoc_x = copy.screenLoc_x;
+  screenLoc_y = copy.screenLoc_y;
+  life = copy.life;
+  locationTrackLength = copy.locationTrackLength;
+  boundRect = copy.boundRect;
+  trajectory = copy.trajectory;
+  //previousStates = copy.previousStates; // Not sure if reference or full copy
 }
 
 Roomba::~Roomba(){
@@ -22,7 +33,11 @@ void Roomba::updateScreenLoc(int x, int y){
 
   screenLoc_x = x;
   screenLoc_y = y;
-  state = *this;
+  life = 5;
+
+  state = Roomba(*this);
+
+  // AFTER I CHANGED THIS TO KEEP TRACK OF STATEs, THERE IS A HANG ISSUE
 
   if(previousStates.size() < locationTrackLength)
      previousStates.insert(previousStates.begin(),state);

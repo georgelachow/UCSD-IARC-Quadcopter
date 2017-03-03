@@ -90,7 +90,7 @@ int main(){
 			line(normal,(*roomba)->getScreenLoc(), camera_center, (*roomba)->color, 2);
 
 			// Trajectory
-			(*roomba)->updateTrajectory();
+			//(*roomba)->updateTrajectory();
 
 			// Distribution Update
 			threshDistribution->distribution.at<uchar>((*roomba)->getScreenLoc()) = 255;
