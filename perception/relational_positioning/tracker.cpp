@@ -36,7 +36,7 @@ ThresholdTracker::ThresholdTracker(){
   lower_threshold = {25,92,0};      // Default on green threshold
   upper_threshold = {80,255,255};
   areaThreshold = 30;
-  distThreshold = 20;
+  distThreshold = 10; // If roomba contour is < disThreshold
 }
 
 ThresholdTracker::~ThresholdTracker(){
@@ -54,6 +54,7 @@ void ThresholdTracker::track(cv::Mat src){
   int center_x, center_y;                       // Center of contour boundRect
   double ca;                                    // Contour area
   bool found;
+  double d, mean_x, mean_y;
   std::vector<std::vector<cv::Point>> contours; // Contours of thresholded
   std::vector<cv::Vec4i> heirarchy;
   vector<Point> contour_poly;                   // Polygon of contour
@@ -85,7 +86,13 @@ void ThresholdTracker::track(cv::Mat src){
       // then chances are it is the same roomba.
       found = false;
       for(auto roomba = trackedRoombas.begin(); roomba != trackedRoombas.end(); roomba++){
-        double d = dist((*roomba)->screenLoc_x, (*roomba)->screenLoc_y, center_x, center_y);
+        // Check the mean of the previousLocations of our roomba with distance
+        mean_x = 0; mean_y = 0;
+        for(int i = 0; i < (*roomba)->previousStates.size(); i++){
+          mean_x += (*roomba)->previousStates[i].screenLoc_x / (*roomba)->previousStates.size();
+          mean_y += (*roomba)->previousStates[i].screenLoc_y / (*roomba)->previousStates.size();
+        }
+        d = dist(mean_x, mean_y, center_x, center_y);
 
         // Check to see if the center of the roomba is close to a previous location
         // Used for maintaining already instantiated tracked roombas
@@ -97,6 +104,8 @@ void ThresholdTracker::track(cv::Mat src){
       }
       // If there is no roomba close to this point, then chances are its a new roomba
       if(!found){
+        cout << center_x << ": " << center_y << "-----" << mean_x << ":" << mean_y << endl;
+        cout << d << endl;
         Roomba* new_Roomba = new Roomba();
         new_Roomba->updateScreenLoc(center_x, center_y);
         new_Roomba->boundRect = boundRect;

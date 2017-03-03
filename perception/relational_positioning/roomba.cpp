@@ -18,35 +18,29 @@ Point2f Roomba::getScreenLoc(){
 }
 
 void Roomba::updateScreenLoc(int x, int y){
+  Roomba state;
+
   screenLoc_x = x;
   screenLoc_y = y;
+  state = *this;
 
-  if(previousLocations.size() < locationTrackLength)
-    previousLocations.push_back(Point2f(x,y));
+  if(previousStates.size() < locationTrackLength)
+     previousStates.insert(previousStates.begin(),state);
   else{
-    previousLocations.erase(previousLocations.begin());
-    previousLocations.push_back(Point2f(x,y));
+    previousStates.pop_back();
+    previousStates.insert(previousStates.begin(),state);
   }
 }
 void Roomba::updateTrajectory(){
   float d;
   int next;
 
-  // RIGHT NOW ASSUME previousLocations will always be size 2
-  /*
-  for(auto loc = previousLocations.begin(); loc != previousLocations.end(); loc++){
-
-    trajectory[0] = (post.x - pre.x)/d;
-    trajectory[1] = (post.y - pre.y)/d;
-  }
-  */
-
   next = locationTrackLength - 1;
-  if(previousLocations.size() == locationTrackLength){
-    d = dist(previousLocations[0].x, previousLocations[0].y,
-             previousLocations[next].x, previousLocations[next].y);
-    trajectory[0] = (previousLocations[0].x - previousLocations[next].x) / d;
-    trajectory[1] = (previousLocations[0].y - previousLocations[next].y) / d;
+  if(previousStates.size() == locationTrackLength){
+    d = dist(previousStates[0].screenLoc_x, previousStates[0].screenLoc_y,
+             previousStates[next].screenLoc_x, previousStates[next].screenLoc_y);
+    trajectory[0] = (previousStates[0].screenLoc_x - previousStates[next].screenLoc_x) / d;
+    trajectory[1] = (previousStates[0].screenLoc_y - previousStates[next].screenLoc_y) / d;
   }
 }
 

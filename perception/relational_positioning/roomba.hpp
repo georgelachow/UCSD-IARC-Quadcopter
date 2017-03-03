@@ -23,7 +23,7 @@ public:
   unsigned int life;
   unsigned int locationTrackLength;
 
-  std::vector<cv::Point2f> previousLocations;
+  std::vector<Roomba> previousStates;
   cv::Vec2f trajectory;
 };
 

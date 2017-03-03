@@ -29,7 +29,7 @@ int main(){
   h = cap.get(CV_CAP_PROP_FRAME_HEIGHT)*scale_y;
 
 	threshDistribution = new Distribution(w,h);
-	threshDistribution->decayVal = 1;
+	threshDistribution->decayVal = 5;
 
 	cout << "Width: " << w<< endl;
 	cout << "Height: " << h<< endl;
@@ -197,7 +197,12 @@ int main(){
 		putText(img_matches, hsv_thresh, cvPoint(5,130), FONT_HERSHEY_COMPLEX_SMALL, 0.65, cvScalar(255,255,255),1, CV_AA);
 		*/
 		snprintf(str_buffer, 255, "Roomba Count, ThresholdTracker: %d", (int)threshTracker.trackedRoombas.size());
-		putText(debug, str_buffer, cvPoint(5,130), FONT_HERSHEY_COMPLEX_SMALL, 1.00, cvScalar(255,255,255),1, CV_AA);
+		putText(debug, str_buffer, cvPoint(5,30), FONT_HERSHEY_COMPLEX_SMALL, 1.00, cvScalar(255,255,255),1, CV_AA);
+		for(int i = 0; i < threshTracker.trackedRoombas.size(); i++){
+			snprintf(str_buffer, 255, "Roomba Pixel Location %d: (%d,%d)", i,
+				threshTracker.trackedRoombas[i]->screenLoc_x, threshTracker.trackedRoombas[i]->screenLoc_y);
+			putText(debug, str_buffer, cvPoint(5,50 + i*20), FONT_HERSHEY_COMPLEX_SMALL, 1.00, cvScalar(255,255,255),1, CV_AA);
+		}
 
 		////////////////////////////////////////////////
     // WINDOW DISPLAY
