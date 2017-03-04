@@ -104,8 +104,6 @@ void ThresholdTracker::track(cv::Mat src){
       }
       // If there is no roomba close to this point, then chances are its a new roomba
       if(!found){
-        cout << center_x << ": " << center_y << "-----" << mean_x << ":" << mean_y << endl;
-        cout << d << endl;
         Roomba* new_Roomba = new Roomba();
         new_Roomba->updateScreenLoc(center_x, center_y);
         new_Roomba->boundRect = boundRect;
