@@ -60,8 +60,6 @@ void ThresholdTracker::track(cv::Mat src){
   vector<Point> contour_poly;                   // Polygon of contour
   Rect boundRect;
 
-  // Threshold on white, and set these white regions as ROIs
-  // Since we know that the only thing white are roombas and obstacles
 
   // Since track acts as an update function, we need to decay our roomba life per update
   decayTrackedRoombas();
@@ -189,7 +187,7 @@ void GridTracker::track(cv::Mat src){
   GaussianBlur(grid, grid, Size(11,11), 0);
 
   // Threshold
-  cvtColor(grid,grid, COLOR_RGB2GRAY);
+  cvtColor(grid,grid, COLOR_BGR2GRAY);
   //threshold(grid, grid, 170, 255, 0); // Global Threshold
   adaptiveThreshold(grid, grid, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 2);// Adaptive Threshold BETTER
   bitwise_not(grid,grid);
@@ -202,12 +200,11 @@ void GridTracker::track(cv::Mat src){
   HoughLines(grid, lines, 1, CV_PI/180, 200);
 
   // Draw lines onto grid
-  //grid.setTo(Scalar::all(0));
+  grid.setTo(Scalar::all(0));
   for(int i = 0; i < lines.size(); i++){
     drawLine(lines[i], grid);
   }
   // Scale back up
-  resize(grid, grid, Size(0,0), 2.0,2.0);
 }
 
 void GridTracker::draw(cv::Mat dst){

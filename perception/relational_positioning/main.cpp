@@ -144,6 +144,7 @@ int main(){
 			toStitch.push_back(threshTracker2.threshFrame);
 			toStitch.push_back(debug2);
 			*/
+			toStitch.push_back(threshTracker.ROI);
 			toStitch.push_back(gridTracker.grid);
 			stitched = stitch(toStitch, 4);
 			imshow("Display", stitched);

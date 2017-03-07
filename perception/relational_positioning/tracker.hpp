@@ -40,6 +40,7 @@ public:
 
   std::vector<Roomba*> trackedRoombas;
   cv::Mat threshFrame;
+  cv::Mat ROI;
 private:
   // Threshold values
   std::vector<int> lower_threshold;
