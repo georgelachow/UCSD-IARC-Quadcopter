@@ -13,16 +13,13 @@
 
 ### __Todo:__
 1. Implement multi-object Kalman Filter based tracking
-2. Use a neural network somewhere for fun.
+2. Grid Detection & Tracking (Using Hough right now)
+3. Use a neural network somewhere for fun.
 	* Possible nets, YOLO v2, SSD, FlowNet, Optical Flow & Semantic Segmentation
-3. Modularize SIFT Tracking, possible use of canny edge detection for edge keypoint matching and noise removal.
-	* __Do not think SIFT is a feasible solution for multi object tracking__
 4. Implement more possible tracking algorithms, Sparse Tracker, SiftFLOW
-5. Gather more data, in various situations
-	* __Simulator data in the works__
-6. Improve line projection
+5. Improve line projection
 	* __I think we need grid detection for this__
-7. Trajectory calculation
+6. Trajectory calculation
 	* __I Think we need some sort of external data from the camera in order to account for the quadcopter motion which causes all points to shift__
 
 ### __Comments:__
