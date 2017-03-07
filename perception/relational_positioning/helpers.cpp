@@ -60,3 +60,16 @@ Mat stitch(vector<Mat> sources, int row_len){
 
   return stitched;
 }
+
+// USED FUNCTION FROM:
+// http://aishack.in/tutorials/sudoku-grabber-opencv-detection/
+void drawLine(cv::Vec2f line, cv::Mat& src, cv::Scalar rgb){
+if(line[1]!=0){
+  float m = -1/tan(line[1]);
+  float c = line[0]/sin(line[1]);
+  cv::line(src, Point(0, c), Point(src.size().width, m*src.size().width+c), rgb);
+}
+else
+  cv::line(src, Point(line[0], 0), Point(line[0], src.size().height), rgb);
+
+}

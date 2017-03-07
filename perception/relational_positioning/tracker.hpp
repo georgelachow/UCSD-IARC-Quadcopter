@@ -15,13 +15,13 @@ public:
   unsigned int decayVal;
 };
 
-class RoombaTracker{
+class Tracker{
 public:
   virtual void track(const cv::Mat src) = 0;
   virtual void draw(cv::Mat dst) = 0;
 };
 
-class ThresholdTracker: public RoombaTracker{
+class ThresholdTracker: public Tracker{
 public:
   ThresholdTracker();
   ~ThresholdTracker();
@@ -50,7 +50,20 @@ private:
   double distThreshold;
 };
 
-class KFTracker: public RoombaTracker{
+class GridTracker : public Tracker{
+public:
+  GridTracker();
+  ~GridTracker();
+  void track(cv::Mat src);
+  void draw(cv::Mat dst);
+
+
+  cv::Mat grid;
+private:
+
+};
+
+class KFTracker: public Tracker{
 public:
   KFTracker();
   ~KFTracker();

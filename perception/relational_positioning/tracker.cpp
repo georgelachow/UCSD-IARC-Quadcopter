@@ -60,6 +60,9 @@ void ThresholdTracker::track(cv::Mat src){
   vector<Point> contour_poly;                   // Polygon of contour
   Rect boundRect;
 
+  // Threshold on white, and set these white regions as ROIs
+  // Since we know that the only thing white are roombas and obstacles
+
   // Since track acts as an update function, we need to decay our roomba life per update
   decayTrackedRoombas();
 
@@ -160,6 +163,57 @@ void ThresholdTracker::setUpper(int v1, int v2, int v3){
   upper_threshold.push_back(v2);
   upper_threshold.push_back(v3);
 }
+
+GridTracker::GridTracker(){
+}
+
+GridTracker::~GridTracker(){
+}
+
+void GridTracker::track(cv::Mat src){
+  Mat dilate_kernel = Mat(3,3, CV_8UC1, 1);
+  vector<Vec2f> lines;
+  int dilate_num = 1;
+
+  // Copy matrix
+  grid = src.clone();
+
+  /////////////////////////////////////////
+  // GRID DETECTION
+  /////////////////////////////////////////
+
+  // Scale the grid down (Reduces computation cost, removes some noise)
+  resize(grid, grid, Size(0,0), 0.5,0.5);
+
+  // Simple gauss blur for noise removal
+  GaussianBlur(grid, grid, Size(11,11), 0);
+
+  // Threshold
+  cvtColor(grid,grid, COLOR_RGB2GRAY);
+  //threshold(grid, grid, 170, 255, 0); // Global Threshold
+  adaptiveThreshold(grid, grid, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 2);// Adaptive Threshold BETTER
+  bitwise_not(grid,grid);
+
+  for(int i = 0; i < dilate_num; i++){
+    dilate(grid,grid,dilate_kernel);
+  }
+
+  // Perform Hough line transform
+  HoughLines(grid, lines, 1, CV_PI/180, 200);
+
+  // Draw lines onto grid
+  //grid.setTo(Scalar::all(0));
+  for(int i = 0; i < lines.size(); i++){
+    drawLine(lines[i], grid);
+  }
+  // Scale back up
+  resize(grid, grid, Size(0,0), 2.0,2.0);
+}
+
+void GridTracker::draw(cv::Mat dst){
+  // I guess for this function we can just over lay the grid on the dst
+}
+
 
 KFTracker::KFTracker(){
 
