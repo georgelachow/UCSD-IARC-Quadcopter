@@ -198,7 +198,9 @@ void CircleTracker::draw(cv::Mat dst){
 
 GridTracker::GridTracker(){
   frame_count = 0;
-  max_lines = 100;
+  max_lines = 120;
+  thetaThreshold = 12;
+  distThreshold = 80;
 }
 
 GridTracker::~GridTracker(){
@@ -207,6 +209,10 @@ GridTracker::~GridTracker(){
 void GridTracker::track(cv::Mat src){
   Mat dilate_kernel = Mat(3,3, CV_8UC1, 1);
   vector<Vec2f> lines;
+  vector<Vec2f> merge;
+  vector<int> merge_memo;
+  Point p1current, p2current, p1next, p2next;
+  float rho = 0.0, theta = 0.0, m, c;
 
   // Copy matrix
   grid = src.clone();
@@ -228,6 +234,7 @@ void GridTracker::track(cv::Mat src){
   Canny(grid, grid, 1,300,3);
 
   // Perform Hough line transform
+  // Use queue like structure
   HoughLines(grid, lines, 1, CV_PI/180, 200);
   for(auto it = lines.begin(); it != lines.end(); it++){
     if(grid_lines.size() >= max_lines){
@@ -238,10 +245,85 @@ void GridTracker::track(cv::Mat src){
       grid_lines.push_back(*it);
   }
 
-  grid.setTo(Scalar(0));
+  for(int i = 0; i < grid_lines.size(); i++)
+    merge_memo.push_back(0);
+
+  // Perform line merge
+  // Find the mean of neighboring lines to generate a new single line
   for(int i = 0; i < grid_lines.size(); i++){
-    drawLine(grid_lines[i], grid);
+    if(merge_memo[i] == 1)
+      continue;
+
+    // Horizontal
+    if(grid_lines[i][1]!=0){
+      m = -1/tan(grid_lines[i][1]);
+      c = grid_lines[i][0]/sin(grid_lines[i][1]);
+      p1current = Point(0, c);    // Left
+      p2current = Point(src.size().width, m*src.size().width+c); // Right
+    }
+    // Vertical
+    else{
+      p1current = Point(grid_lines[i][0], 0); // Top
+      p2current = Point(grid_lines[i][0], src.size().height); // Bottom
+    }
+    merge.push_back(grid_lines[i]);
+
+    // Compare with possible neighbor
+    for(int j = 0; j < grid_lines.size(); j++){
+      if(i == j || merge_memo[j] == 1)
+        continue;
+
+      // Horizontal
+      if(grid_lines[j][1]!=0){
+        m = -1/tan(grid_lines[j][1]);
+        c = grid_lines[j][0]/sin(grid_lines[j][1]);
+        p1next = Point(0, c);    // Left
+        p2next = Point(src.size().width, m*src.size().width+c); // Right
+      }
+      // Vertical
+      else{
+        p1next = Point(grid_lines[j][0], 0); // Top
+        p2next = Point(grid_lines[j][0], src.size().height); // Bottom
+      }
+
+      // Compare distance
+      // This is seriously terrible. Need a better solution.
+      if((dist(p1current.x,p1current.y, p1next.x, p1next.y) < distThreshold &&
+          dist(p2current.x,p2current.y, p2next.x, p2next.y) < distThreshold) ||
+          (dist(p1current.x,p1current.y, p2next.x, p2next.y) < distThreshold &&
+          dist(p2current.x,p2current.y, p1next.x, p1next.y) < distThreshold)){
+         merge.push_back(grid_lines[j]);
+         merge_memo[j] = 1;
+       }
+    }
+    // Calculate mean line
+    for(auto it = merge.begin(); it != merge.end(); it++){
+      rho += (*it)[0];
+      theta += (*it)[1];
+    }
+    if(merge.size() > 0){
+      rho /= merge.size();
+      theta /= merge.size();
+      merged_lines.push_back(Vec2f(rho,theta));
+    }
+
+    /*
+    if (merge.size() > 0)
+      cout << merge.size() << endl;
+    */
+
+    merge.clear();
+    rho = 0.0;
+    theta = 0.0;
+    merge_memo[i] = 1;
   }
+  merge_memo.clear();
+
+  grid.setTo(Scalar(0));
+  for(int i = 0; i < merged_lines.size(); i++){
+    drawLine(merged_lines[i], grid);
+  }
+  merged_lines.clear();
 
   // Keep track of frames gone by
   frame_count++;
