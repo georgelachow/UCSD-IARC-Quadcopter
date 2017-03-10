@@ -19,6 +19,8 @@ class Tracker{
 public:
   virtual void track(const cv::Mat src) = 0;
   virtual void draw(cv::Mat dst) = 0;
+
+  int frame_count;
 };
 
 class ThresholdTracker: public Tracker{
@@ -58,8 +60,9 @@ public:
   void track(cv::Mat src);
   void draw(cv::Mat dst);
 
-
   cv::Mat grid;
+  std::vector<cv::Vec2f> grid_lines;
+  int max_lines;
 private:
 
 };

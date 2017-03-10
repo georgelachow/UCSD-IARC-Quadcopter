@@ -163,6 +163,8 @@ void ThresholdTracker::setUpper(int v1, int v2, int v3){
 }
 
 GridTracker::GridTracker(){
+  frame_count = 0;
+  max_lines = 100;
 }
 
 GridTracker::~GridTracker(){
@@ -171,7 +173,6 @@ GridTracker::~GridTracker(){
 void GridTracker::track(cv::Mat src){
   Mat dilate_kernel = Mat(3,3, CV_8UC1, 1);
   vector<Vec2f> lines;
-  int dilate_num = 1;
 
   // Copy matrix
   grid = src.clone();
@@ -179,11 +180,8 @@ void GridTracker::track(cv::Mat src){
   /////////////////////////////////////////
   // GRID DETECTION
   /////////////////////////////////////////
-
-  // Scale the grid down (Reduces computation cost, removes some noise)
-  resize(grid, grid, Size(0,0), 0.5,0.5);
-
   // Simple gauss blur for noise removal
+  // NOTE: Kernel size should be dependent on altitude
   GaussianBlur(grid, grid, Size(11,11), 0);
 
   // Threshold
@@ -192,19 +190,27 @@ void GridTracker::track(cv::Mat src){
   adaptiveThreshold(grid, grid, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 2);// Adaptive Threshold BETTER
   bitwise_not(grid,grid);
 
-  for(int i = 0; i < dilate_num; i++){
-    dilate(grid,grid,dilate_kernel);
-  }
+  // Canny Edge detection
+  Canny(grid, grid, 1,300,3);
 
   // Perform Hough line transform
   HoughLines(grid, lines, 1, CV_PI/180, 200);
-
-  // Draw lines onto grid
-  grid.setTo(Scalar::all(0));
-  for(int i = 0; i < lines.size(); i++){
-    drawLine(lines[i], grid);
+  for(auto it = lines.begin(); it != lines.end(); it++){
+    if(grid_lines.size() >= max_lines){
+      grid_lines.erase(grid_lines.begin());
+      grid_lines.push_back(*it);
+    }
+    else
+      grid_lines.push_back(*it);
   }
-  // Scale back up
+
+  grid.setTo(Scalar(0));
+  for(int i = 0; i < grid_lines.size(); i++){
+    drawLine(grid_lines[i], grid);
+  }
+
+  // Keep track of frames gone by
+  frame_count++;
 }
 
 void GridTracker::draw(cv::Mat dst){
