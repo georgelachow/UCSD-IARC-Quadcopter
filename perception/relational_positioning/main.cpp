@@ -18,6 +18,7 @@ int main(){
 	GridTracker gridTracker;
 	ThresholdTracker threshTracker;
 	ThresholdTracker threshTracker2;
+	CircleTracker circleTracker;
 	Distribution* threshDistribution;
 	Distribution* threshDistribution2;
 
@@ -103,6 +104,12 @@ int main(){
 		// Draw
 		threshTracker2.draw(output);
 		*/
+
+		//////////////////////////////////////////////////
+		// CIRCLE TRACKING
+		//////////////////////////////////////////////////
+		//circleTracker.track(normal);
+		//circleTracker.draw(output);
 
 		//////////////////////////////////////////////////
 		// GRID TRACKING

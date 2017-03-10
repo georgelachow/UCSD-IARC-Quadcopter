@@ -162,6 +162,40 @@ void ThresholdTracker::setUpper(int v1, int v2, int v3){
   upper_threshold.push_back(v3);
 }
 
+CircleTracker::CircleTracker(){
+
+}
+
+CircleTracker::~CircleTracker(){
+
+}
+
+void CircleTracker::track(cv::Mat src){
+  Mat frame = src.clone();
+  cvtColor(frame, frame, CV_BGR2GRAY);
+
+  adaptiveThreshold(frame, frame, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 2);// Adaptive Threshold BETTER
+  bitwise_not(frame,frame);
+
+  // Blur for noise removal
+  GaussianBlur(frame, frame, Size(11,11),2,2);
+
+  // Apparently Hough Circle has an internal Canny Edge Detector
+  circles.clear();
+  HoughCircles(frame, circles, CV_HOUGH_GRADIENT, 1, 10,300,100,0,0);
+
+}
+
+void CircleTracker::draw(cv::Mat dst){
+  int radius = 0;
+  for(size_t i = 0; i < circles.size(); i++){
+    Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+    radius = cvRound(circles[i][2]);
+    circle(dst, center, 3, Scalar(0,255,0), -1, 8,0);
+    circle(dst,center, radius, Scalar(0,0,255),3,8,0);
+  }
+}
+
 GridTracker::GridTracker(){
   frame_count = 0;
   max_lines = 100;

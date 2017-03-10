@@ -53,6 +53,18 @@ private:
   double distThreshold;
 };
 
+class CircleTracker : public Tracker{
+public:
+  CircleTracker();
+  ~CircleTracker();
+  void track(cv::Mat src);
+  void draw(cv::Mat dst);
+
+  std::vector<Roomba*> trackedRoombas;
+  std::vector<cv::Vec3f> circles;
+
+};
+
 class GridTracker : public Tracker{
 public:
   GridTracker();
