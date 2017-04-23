@@ -1,0 +1,104 @@
+# Created by Ultra Librarian Gold 8.1.269 Copyright © 1999-2017
+# Dequeue Server, Accelerated Designs
+
+Grid mil;
+Set Wire_Bend 2;
+
+
+Edit 'POT_3266W.pac';
+Change Drill 38;
+Pad '1' Square 0 60 R0 (-200 56);
+Change Drill 38;
+Pad '2' Round 0 60 R0 (-100 -56);
+Change Drill 38;
+Pad '3' Round 0 60 R0 (0 56);
+Layer 21;
+Wire 6 (-240 -96) (40 -96);
+Wire 6 (40 -96) (40 -17);
+Wire 6 (40 96) (-240 96);
+Wire 6 (-240 96) (-240 39);
+Wire 6 (-240 -39) (-240 -96);
+Wire 6 (40 17) (40 96);
+Change Size 50;
+Change Ratio 6;
+Text '*' SR0 (-302 -25);
+Change Size 50;
+Change Ratio 6;
+Text '>Name' SR0 (-229 -25);
+Layer 51;
+Wire 6 (-240 -96) (40 -96);
+Wire 6 (40 -96) (40 96);
+Wire 6 (40 96) (-240 96);
+Wire 6 (-240 96) (-240 -96);
+Change Size 50;
+Change Ratio 6;
+Text '*' SR0 (-302 -25);
+
+Edit 'POT.sym';
+Layer 94;
+Pin '1' Pas None Short R0 Off 0 (0 0)
+Pin '2' Pas None Short R270 Off 1 (400 300)
+Pin '3' Pas None Short R180 Off 1 (800 0)
+Wire 8 (375 150) (400 75);
+Wire 8 (425 150) (400 75);
+Wire 8 (375 150) (425 150);
+Wire 8 (400 150) (400 200);
+Wire 8 (250 0) (275 50);
+Wire 8 (375 50) (425 -50);
+Wire 8 (425 -50) (475 50);
+Wire 8 (325 -50) (375 50);
+Wire 8 (275 50) (325 -50);
+Wire 8 (525 -50) (550 0);
+Wire 8 (550 0) (700 0);
+Wire 8 (100 0) (250 0);
+Wire 8 (475 50) (525 -50);
+Layer 97;
+Layer 95;
+Change Size 137;
+Change Ratio 10;
+Text '>Name' SR0 (114 -194);
+Layer 96;
+Change Size 137;
+Change Ratio 10;
+Text '>Value' SR0 (72 -318);
+
+Edit 'POTV.sym';
+Layer 94;
+Pin '1' Pas None Short R270 Off 0 (0 0)
+Pin '3' Pas None Short R90 Off 1 (0 -800)
+Pin '2' Pas None Short R0 Off 1 (-300 -400)
+Wire 8 (0 -550) (-50 -525);
+Wire 8 (0 -700) (0 -550);
+Wire 8 (-150 -425) (-75 -400);
+Wire 8 (-150 -375) (-75 -400);
+Wire 8 (-150 -425) (-150 -375);
+Wire 8 (50 -475) (-50 -425);
+Wire 8 (-50 -425) (50 -375);
+Wire 8 (50 -375) (-50 -325);
+Wire 8 (-50 -325) (50 -275);
+Wire 8 (50 -275) (0 -250);
+Wire 8 (-50 -525) (50 -475);
+Wire 8 (0 -250) (0 -100);
+Wire 8 (-150 -400) (-200 -400);
+Layer 97;
+Layer 95;
+Change Size 137;
+Change Ratio 10;
+Text '>Name' SR0 (75 -394);
+Layer 96;
+Change Size 137;
+Change Ratio 10;
+Text '>Value' SR0 (75 -518);
+
+Edit '3266W-1-502LF.dev';
+Prefix 'R';
+Description '';
+Value Off;
+Add POT 'A' Next  1 (0 0);
+Package 'POT_3266W';
+Technology '';
+Attribute Vendor 'Bourns Electronics';
+Attribute Manufacturer_Part_Number '3266W1502LF';
+Connect 'A.3' '3';
+Connect 'A.2' '2';
+Connect 'A.1' '1';
