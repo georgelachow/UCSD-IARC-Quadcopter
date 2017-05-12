@@ -1,58 +1,64 @@
-#include "settings.hpp"
-#include "tracker.hpp"
-#include "helpers.hpp"
+#include <ros/ros.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+#include <perception_interface/settings.hpp>
+#include <perception_interface/tracker.hpp>
+#include <perception_interface/helpers.hpp>
 
 using namespace std;
 using namespace cv;
 
-int main(){
-	double w,h;								// Resolution
-	int frame_count;
-	Mat normal;
-	Mat output, stitched;
-	Mat pre_frame, post_frame;
-	Mat grid;
-	Mat debug, debug2;
-	Point2f camera_center;
-	vector<cv::Mat> toStitch;
+static const std::string OPENCV_WINDOW = "Observer's Gaze";
 
-	GridTracker gridTracker;
-	ThresholdTracker threshTracker;
-	ThresholdTracker threshTracker2;
-	CircleTracker circleTracker;
-	Distribution* threshDistribution;
-	Distribution* threshDistribution2;
+class Observer
+{
+public:
+  Observer(const char* cam_topic): it_(nh_){
+    /////////////////////////////////
+    // Setup Observer processing
+    /////////////////////////////////
+    w = 800*scale_x;
+    h = 600*scale_y;
 
-	char str_buffer[255] = {0};
+  	threshDistribution = new Distribution(w,h);
+  	threshDistribution->decayVal = 5;
+  	threshDistribution2 = new Distribution(w,h);
+  	threshDistribution2->decayVal = 5;
 
-	cout << CV_VERSION << endl;
+  	threshTracker2.setLower(0,92,0);
+  	threshTracker2.setUpper(5,255,255);
 
-	// Setup video feed
-	VideoCapture cap(video_dir);
-	if(!cap.isOpened()){
-		printf("Failed to capture video!\n");
-		return -1;
-	}
-  w = cap.get(CV_CAP_PROP_FRAME_WIDTH)*scale_x;
-  h = cap.get(CV_CAP_PROP_FRAME_HEIGHT)*scale_y;
+    frame_count = 0;
 
-	threshDistribution = new Distribution(w,h);
-	threshDistribution->decayVal = 5;
-	threshDistribution2 = new Distribution(w,h);
-	threshDistribution2->decayVal = 5;
+    ///////////////////////////////////////////////////////////////
+    // Subscribe to input video feed and publish output video feed
+    ///////////////////////////////////////////////////////////////
+    image_sub_ = it_.subscribe(cam_topic,1, &Observer::process, this);
 
-	threshTracker2.setLower(0,92,0);
-	threshTracker2.setUpper(5,255,255);
+    // Define Window
+    cv::namedWindow(OPENCV_WINDOW);
+  }
+  ~Observer(){  cv::destroyWindow(OPENCV_WINDOW);}
 
-	cout << "Width: " << w<< endl;
-	cout << "Height: " << h<< endl;
-
-	///////////////////////////////////////////////////
-	// START VIDEO CAPTURE
-	///////////////////////////////////////////////////
-	frame_count = 0;
-	while(true){
-		cap >> post_frame;
+  void process(const sensor_msgs::ImageConstPtr& msg){
+    //////////////////////////////////////////////////////
+    // Grab the image pointer from the erlecopter camera
+    //////////////////////////////////////////////////////
+    cv_bridge::CvImagePtr cv_ptr;
+    try
+    {
+      cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+      ROS_ERROR("cv_bridge exception: %s", e.what());
+      return;
+    }
+    post_frame = cv_ptr->image;
 
 		//////////////////////////////////////////////////
 		// PREPROCESSING / OTHERS
@@ -115,10 +121,12 @@ int main(){
 		//////////////////////////////////////////////////
 		// GRID TRACKING
 		//////////////////////////////////////////////////
+        /*
 		gridTracker.track(normal);
 		gridTracker.draw(output);
 		grid = gridTracker.grid.clone();
 		threshTracker.draw(grid);
+        */
 
 		/////////////////////////////////////////////////
 		// SCREEN DEBUG
@@ -140,9 +148,6 @@ int main(){
 			putText(debug2, str_buffer, cvPoint(5,50 + i*20), FONT_HERSHEY_COMPLEX_SMALL, 1.00, cvScalar(255,255,255),1, CV_AA);
 		}
 
-		////////////////////////////////////////////////
-    // WINDOW DISPLAY
-		////////////////////////////////////////////////
 		if(!post_frame.empty()){
 			toStitch.clear();
 			toStitch.push_back(output);
@@ -157,14 +162,48 @@ int main(){
 			toStitch.push_back(threshTracker.ROI);
 			toStitch.push_back(grid);
 			stitched = stitch(toStitch, 4);
-			imshow("Display", stitched);
+			imshow(OPENCV_WINDOW, stitched);
+      cv::waitKey(3);
 
 			pre_frame = normal.clone();
 			frame_count++;
     }
+  }
 
-    // Need this for some reason.
-		if((waitKey(1)&(0xff)) == 27) break;
-	}
-	return 0;
+private:
+  // ROS Interface
+  ros::NodeHandle nh_;
+  image_transport::ImageTransport it_;
+  image_transport::Subscriber image_sub_;
+  image_transport::Publisher image_pub_;
+
+  // OpenCV Settings
+	double w,h;								// Resolution
+	int frame_count;
+	Mat normal;
+	Mat output, stitched;
+	Mat pre_frame, post_frame;
+	Mat grid;
+	Mat debug, debug2;
+	Point2f camera_center;
+	vector<cv::Mat> toStitch;
+
+	//GridTracker gridTracker;
+	ThresholdTracker threshTracker;
+	ThresholdTracker threshTracker2;
+	CircleTracker circleTracker;
+	Distribution* threshDistribution;
+	Distribution* threshDistribution2;
+
+	char str_buffer[255] = {0};
+};
+
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "observer");
+  Observer obs("/erlecopter/sensors/camera/image_raw");
+
+  // Spin the thread
+  ros::spin();
+  return 0;
 }
