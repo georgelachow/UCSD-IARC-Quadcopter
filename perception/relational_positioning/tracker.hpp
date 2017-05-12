@@ -75,6 +75,7 @@ public:
   cv::Mat grid;
   std::vector<cv::Vec2f> grid_lines;
   std::vector<cv::Vec2f> merged_lines;
+  std::vector<cv::Vec2f> intersections;
 
   int max_lines;
   int thetaThreshold;

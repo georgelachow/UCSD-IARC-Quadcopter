@@ -11,6 +11,7 @@ int main(){
 	Mat normal;
 	Mat output, stitched;
 	Mat pre_frame, post_frame;
+	Mat grid;
 	Mat debug, debug2;
 	Point2f camera_center;
 	vector<cv::Mat> toStitch;
@@ -116,6 +117,8 @@ int main(){
 		//////////////////////////////////////////////////
 		gridTracker.track(normal);
 		gridTracker.draw(output);
+		grid = gridTracker.grid.clone();
+		threshTracker.draw(grid);
 
 		/////////////////////////////////////////////////
 		// SCREEN DEBUG
@@ -152,7 +155,7 @@ int main(){
 			toStitch.push_back(debug2);
 			*/
 			toStitch.push_back(threshTracker.ROI);
-			toStitch.push_back(gridTracker.grid);
+			toStitch.push_back(grid);
 			stitched = stitch(toStitch, 4);
 			imshow("Display", stitched);
 

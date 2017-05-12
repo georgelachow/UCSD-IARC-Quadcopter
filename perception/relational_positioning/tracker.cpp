@@ -307,11 +307,6 @@ void GridTracker::track(cv::Mat src){
       merged_lines.push_back(Vec2f(rho,theta));
     }
 
-    /*
-    if (merge.size() > 0)
-      cout << merge.size() << endl;
-    */
-
     merge.clear();
     rho = 0.0;
     theta = 0.0;
@@ -324,6 +319,9 @@ void GridTracker::track(cv::Mat src){
     drawLine(merged_lines[i], grid);
   }
   merged_lines.clear();
+
+  // Calculate intersections
+  // Unfortunately another n^2
 
   // Keep track of frames gone by
   frame_count++;

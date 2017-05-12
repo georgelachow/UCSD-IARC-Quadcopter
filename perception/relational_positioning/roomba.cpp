@@ -64,7 +64,9 @@ void Roomba::drawBound(cv::Mat& dst){
 }
 
 void Roomba::drawTrajectory(cv::Mat& dst, int scale){
+    /*
 			arrowedLine(dst,getScreenLoc(),
             Point2f(screenLoc_x - trajectory[0]*scale,
                     screenLoc_y - trajectory[1]*scale), color, 5);
+            */
 }
