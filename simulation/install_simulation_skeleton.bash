@@ -25,7 +25,7 @@ sudo apt-get install -y qtbase5-dev libqt5core5a libqt5gui5 libqt5concurrent5 li
 
 cd ~ &&
 git clone https://github.com/ackhoury/simulation.git &&
-cd ~/ucsd_iarc_simulation &&
+cd ~/simulation &&
 sudo apt-get -y install libtool automake autoconf libexpat1-dev &&
 cd jsbsim &&
 ./autogen.sh --enable-libraries &&
