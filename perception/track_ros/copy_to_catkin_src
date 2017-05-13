@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Change this directory to where you want to copy the files to
+d=~/simulation/ros_catkin_ws/src/perception_interface
+
+echo "Are you sure you want to copy this to "${d}"? (Y/N):"
+read decision
+
+decision=`echo $decision | awk '{print toupper($0)}'`
+
+mkdir -p $d
+if [ "$decision" = "Y" ] || [ "$decision" = "YES" ]; then
+    /usr/bin/env cp -rfv ./* $d
+else
+    echo "Exiting..."
+fi

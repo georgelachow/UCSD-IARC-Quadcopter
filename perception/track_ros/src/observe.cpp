@@ -17,10 +17,12 @@ static const std::string OPENCV_WINDOW = "Observer's Gaze";
 class Observer
 {
 public:
-  Observer(const char* cam_topic): it_(nh_){
+  Observer(int argc, char **argv, const char* cam_topic): it_(nh_){
     /////////////////////////////////
     // Setup Observer processing
     /////////////////////////////////
+
+    // Indicates sizes of each window
     w = 800*scale_x;
     h = 600*scale_y;
 
@@ -39,7 +41,17 @@ public:
     ///////////////////////////////////////////////////////////////
     image_sub_ = it_.subscribe(cam_topic,1, &Observer::process, this);
 
-    // Define Window
+    //////////////////////////////
+    // Window Settings
+    //////////////////////////////
+    if(argc == 3){
+      window_width = atoi(argv[1]);
+      window_height = atoi(argv[2]);
+    }
+    else{
+      window_width = 1920;
+      window_height = 1080;
+    }
     cv::namedWindow(OPENCV_WINDOW);
   }
   ~Observer(){  cv::destroyWindow(OPENCV_WINDOW);}
@@ -139,6 +151,7 @@ public:
 				dist(threshTracker.trackedRoombas[i]->screenLoc_x, threshTracker.trackedRoombas[i]->screenLoc_y, camera_center.x, camera_center.y));
 			putText(debug, str_buffer, cvPoint(5,50 + i*20), FONT_HERSHEY_COMPLEX_SMALL, 1.00, cvScalar(255,255,255),1, CV_AA);
 		}
+    /*
 		snprintf(str_buffer, 255, "Roomba Count, ThresholdTracker2: %d", (int)threshTracker2.trackedRoombas.size());
 		putText(debug2, str_buffer, cvPoint(5,30), FONT_HERSHEY_COMPLEX_SMALL, 1.00, cvScalar(255,255,255),1, CV_AA);
 		for(int i = 0; i < threshTracker2.trackedRoombas.size(); i++){
@@ -147,6 +160,7 @@ public:
 				dist(threshTracker2.trackedRoombas[i]->screenLoc_x, threshTracker2.trackedRoombas[i]->screenLoc_y, camera_center.x, camera_center.y));
 			putText(debug2, str_buffer, cvPoint(5,50 + i*20), FONT_HERSHEY_COMPLEX_SMALL, 1.00, cvScalar(255,255,255),1, CV_AA);
 		}
+    */
 
 		if(!post_frame.empty()){
 			toStitch.clear();
@@ -158,11 +172,13 @@ public:
 			toStitch.push_back(threshDistribution2->distribution);
 			toStitch.push_back(threshTracker2.threshFrame);
 			toStitch.push_back(debug2);
-			*/
 			toStitch.push_back(threshTracker.ROI);
 			toStitch.push_back(grid);
+			*/
 			stitched = stitch(toStitch, 4);
-			imshow(OPENCV_WINDOW, stitched);
+  		display_frame = Mat(window_width,window_height, CV_8UC3, Scalar(0,0,0));
+      cv::resize(stitched, display_frame, cv::Size(window_width, window_height), 0, 0, cv::INTER_CUBIC);
+			imshow(OPENCV_WINDOW, display_frame);
       cv::waitKey(3);
 
 			pre_frame = normal.clone();
@@ -178,9 +194,11 @@ private:
   image_transport::Publisher image_pub_;
 
   // OpenCV Settings
-	double w,h;								// Resolution
+	double w,h;								        // Resolution per window
+  int window_width, window_height;  // Total resolution
 	int frame_count;
 	Mat normal;
+  Mat display_frame;
 	Mat output, stitched;
 	Mat pre_frame, post_frame;
 	Mat grid;
@@ -201,7 +219,7 @@ private:
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "observer");
-  Observer obs("/erlecopter/sensors/camera/image_raw");
+  Observer obs(argc, argv, "/erlecopter/sensors/camera/image_raw");
 
   // Spin the thread
   ros::spin();

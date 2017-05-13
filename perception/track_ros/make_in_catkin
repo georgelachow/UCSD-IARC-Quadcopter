@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Change this directory to where you want catkin make
+d=~/simulation/ros_catkin_ws/
+
+echo "Are you sure you want to make catkin here"${d}"? (Y/N):"
+read decision
+
+decision=`echo $decision | awk '{print toupper($0)}'`
+
+mkdir -p $d
+if [ "$decision" = "Y" ] || [ "$decision" = "YES" ]; then
+    cd $d
+    catkin_make
+else
+    echo "Exiting..."
+fi
