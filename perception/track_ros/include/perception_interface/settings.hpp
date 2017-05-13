@@ -13,7 +13,7 @@
 // Directories
 const std::string video_dir = std::string("/home/jason/IARC/data/hexagon/3m_5shexroomba.avi");
 
-// Scales
+// Scale the mini-windows
 const double scale_x = 0.75;
 const double scale_y = 0.75;
 

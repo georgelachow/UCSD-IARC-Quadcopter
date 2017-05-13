@@ -22,9 +22,9 @@ public:
     // Setup Observer processing
     /////////////////////////////////
 
-    // Indicates sizes of each window
-    w = 800*scale_x;
-    h = 600*scale_y;
+    // Indicates sizes of each mini-window
+    w = 960*scale_x;
+    h = 720*scale_y;
 
   	threshDistribution = new Distribution(w,h);
   	threshDistribution->decayVal = 5;
@@ -73,9 +73,13 @@ public:
     post_frame = cv_ptr->image;
 
 		//////////////////////////////////////////////////
-		// PREPROCESSING / OTHERS
+		// PREPROCESSING / INITIALIZATION
 		//////////////////////////////////////////////////
+
+    // Resize the post_frame to some scale
 		resize(post_frame, post_frame, Size(0,0),scale_x,scale_y);
+    cout << post_frame.rows << " " << post_frame.cols << endl;
+
 		camera_center = Point2f((post_frame.cols/2), (post_frame.rows/2));
 		output = post_frame.clone();
 		normal = post_frame.clone();
@@ -168,6 +172,7 @@ public:
 			toStitch.push_back(threshDistribution->distribution);
 			toStitch.push_back(threshTracker.threshFrame);
 			toStitch.push_back(debug);
+
 			/*
 			toStitch.push_back(threshDistribution2->distribution);
 			toStitch.push_back(threshTracker2.threshFrame);
@@ -175,6 +180,7 @@ public:
 			toStitch.push_back(threshTracker.ROI);
 			toStitch.push_back(grid);
 			*/
+
 			stitched = stitch(toStitch, 4);
   		display_frame = Mat(window_width,window_height, CV_8UC3, Scalar(0,0,0));
       cv::resize(stitched, display_frame, cv::Size(window_width, window_height), 0, 0, cv::INTER_CUBIC);
