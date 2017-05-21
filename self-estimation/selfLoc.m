@@ -1,5 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Self-localization script - quadcopter
+% Inputs are velocity and angle of quadcopter, and time
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
 clf
@@ -35,6 +36,7 @@ while(1)
 % gyro = input('What is the angle (degs)? ');
 % time = input('How long since last sampled (sec)? ');
 
+% Auto-generate inputs
 vel = 0.5;
 if mod(turn,3) == 0
     gyro = (359-0).*rand(1,1) + 0;
@@ -56,7 +58,7 @@ y = new_y+y;
 
 % Delete the tail of the trail
 if turn > trailSize-1
-    delete(trail(trailSize));l
+    delete(trail(trailSize));
 end
 
 % Plot and shift array
