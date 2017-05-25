@@ -23,7 +23,7 @@ line([-10 10],[-10 -10],'Color','green','LineWidth',3);
 title('IARC Arena');
 
 % Initialize variables
-trailSize = 5;
+trailSize = 3;
 trail = zeros(trailSize,1);
 turn = 1;
 gyro = 0;
@@ -62,7 +62,8 @@ if turn > trailSize-1
 end
 
 % Plot and shift array
-trail(1) = plot(x,y,'p');
+plot(x,y,'.');
+trail(1) = plot(x,y,'*');
 trail = circshift(trail,1);
 
 turn = turn + 1;
