@@ -15,6 +15,9 @@
       line-height: 1.8;
       color: #818181;
   }
+  p {
+   text-align: justify;
+  }
   h2 {
       font-size: 24px;
       text-transform: uppercase;
@@ -28,6 +31,7 @@
       color: #303030;
       font-weight: 400;
       margin-bottom: 30px;
+      text-align: justify;
   }
   .jumbotron {
       background-color: #4D65A1;
@@ -217,7 +221,7 @@
 
 <div class="jumbotron text-center">
   <h1>IEEE at UC San Diego</h1>
-  <p>IARC Quadcoptor</p>
+  <p style="text-align: center;">IARC Quadcoptor</p>
 </div>
 
 <!-- Container (About Section) -->
@@ -244,30 +248,30 @@
   <br>
   <div class="row slideanim">
     <div class="col-sm-4">
-      <h4>AIRFRAME</h4>
+      <h4 style="text-align: center;">AIRFRAME</h4>
       <p>The airframe chosen for mission 7a was a 640 class quadcopter. Because efforts were focused on software, a commercial airframe that included electronic speed controls, motors and propellers designed for light duty cinematography was chosen. This ensures a lightweight, well developed package designed for long flight times with additional payload.</p>
     </div>
     <div class="col-sm-4">
-      <h4>PROPULSION</h4>
+      <h4 style="text-align: center;">PROPULSION</h4>
       <p>Propulsion is achieved with four Hobbywing XRotor 40A ESCs powering T-Motor AntiGrav- ity MN4006, 380kv motors paired with 15 inch Tarot 1555 foldable propellers. This motor and propeller combination can produce a maximum total thrust of 8.9 kilograms while con- suming 360 Watts, far above aircraft weight. Although, these motors are extremely efficient at low RPM, consuming only 75 Watts at 50% throttle.</p>
     </div>
     <div class="col-sm-4">
-      <h4>POWER DISTRIBUTION</h4>
+      <h4 style="text-align: center;">POWER DISTRIBUTION</h4>
       <p>The aircraft is powered by a 6 Cell, 22.2V 4500mah Lithium Polymer (LiPo) battery. The battery chosen was the largest watt hour pack, at 99.9Wh, we were allowed to bring on an airline. Without the sensor package, the vehicle’s flight time is 35 minutes at 1.83kg. With the full payload, the operational flight time is an estimated 20 minutes. Two voltage regulators are on the aircraft. One is used to supply 5V to the companion computer, USB camera and high power WiFi dongle. The second is used to supply 5V, propulsion current draw and battery voltage to the flight controller.</p>
     </div>
   </div>
   <br><br>
   <div class="row slideanim">
     <div class="col-sm-4">
-      <h4>SENSORS</h4>
+      <h4 style="text-align: center;">SENSORS</h4>
       <p>The Ardupilot flight control stack was originally built with GPS for holding a position. Since we cannot use GPS for positioning, holding a position in a hover is achieved with a PX4Flow optical flow camera which is solely used for the low-level flight control of the Arducopter flight stack and serves as a safety redundancy in the event of a loss of communication. The Pixhawk flight controller includes one barometer, two 3-axis gyroscope, two 3-axis accelerometers and a 3-axis magnetometer. Due to the built in barometer poor accuracy, we opted for lidar for altitude. We chose a LIDAR-Lite v3 for altitude which has a range from 0-40m and an accuracy up to 2.5cm. A down-facing camera with a wide angle lens is mounted to the bottom of the aircraft for vision needs.</p>
     </div>
     <div class="col-sm-4">
-      <h4>COMMUNICATION</h4>
+      <h4 style="text-align: center;">COMMUNICATION</h4>
       <p>There are two primary communication links from the aircraft to the ground station. The first communication link is primarily intended for triggering of the emergency safety switch but also serves as a method of switching the aircraft from manual mode to autonomous mode. This link is a standard 2.4GHz spread spectrum radio controller and receiver. The second communication link in our system supports all communications between the aircraft and the ground station computer, including video streaming, telemetry, sensor data and aircraft commands. This link is through a 802.11b/g/n WiFi Link using an USB WiFi Module with a maximum bandwidth of 150Mbps.</p>
     </div>
     <div class="col-sm-4">
-      <h4 style="color:#303030;">SOFTWARE</h4>
+      <h4  style="text-align: center;">SOFTWARE</h4>
       <p>The software component of the aircraft is built on a Raspberry Pi 3 running rasbian, with a ROS and MAVROS software stack to enable remote communication and live streaming to a nearby groundstation. The Ardupilot flight control stack handles low-level flight controls for determining flight path and control of the vehicle, while the majority of the computation is handled offboard via a nearby groundstation running Ubuntu 14.04 with MAVROS.</p>
     </div>
   </div>
@@ -283,6 +287,8 @@
       <div class="col-sm-8">
         <h2>PERCEPTION</h2><br>
         <h4> We perceive the environment entirely through a downwards facing camera with a large field of view. The problem in which perception solves is the detection and tracking of objects of interest within the arena. Here is where the computer vision suite resides, processing one frame at a time from the camera feed to solve these tasks. Additionally, the use of external sensory data from the Pixhawk enables additional information in which our tracking algorithm can utilize in order to develop more precise estimates for any particular object. The information calculated from each frame is than forwarded to our path planning and state estimation suites in order to react to and perform a variety of decision making tasks.</h4><br>
+        <p>
+The roombas have very distinct colored features, with red and green paddles, therefore a threshold is performed over a range in the HSV colors-space to identify an agent of interest. This was preceded by a Gaussian Blur in order to remove small perturbations within the frame. Its pixel coordinates are than calculated by locating the center of its contour and a conversion is performed.</p>
       </div>
     </div>
   </div>
@@ -295,6 +301,7 @@
       <div class="col-sm-8">
         <h2>PLANNING</h2><br>
         <h4>Once our planning algorithm chooses a roomba to ”score,” it moves towards the roomba, and follows the roomba from above. This following algorithm utilizes two Proportional-Integral- Derivative controllers(PID), one for Roll and the other for Pitch. Using the roomba position information output by the perception stack, we are able to calculate the PID coefficients and implement the controllers. By tuning the PID gains, we are able to adjust the response of the aircraft to a change in position of the roomba, resulting in a smooth and accurate following of the roomba.</h4><br>
+        <h4>The landing algorithm immediately proceeds the ”Following” algorithm, where once we believe we have an accurate ”follow” of the roomba, our quadcopter can slowly descend onto the roomba, pushing the button. We then increase our altitude until we can detect the state and heading of the roomba, such that either we land once more or return to a follow, such that it moves towards the goal line.</h4>
       </div>
       <div class="col-sm-4">
         <h2></h2>
@@ -319,6 +326,7 @@
       <div class="col-sm-8">
         <h2>SELF-ESTIMATION</h2><br>
         <h4> The UAV depends on information in its surroundings such as visual location and its relative orientation. We can exploit the uniformity of the 20m by 20m square grid being compromised of smaller 1m by 1m squares to localize the UAV.</h4><br>
+        <p>Grid detection is made possible through a few steps. First, we apply a white threshold to highlight the grid lines. Then we apply a canny edge detector to identify the edges of the lines. Next, a hough line transform is done in order to find the location and angles of the grid lines. Since we identified the location and angle of the grid lines from the hough transform, we can exploit the hough space.  Using this, we can localize ourselves relative to our location on the grid by counting how many grid lines we traversed, both vertically and horizontally.</p>
       </div>
     </div>
   </div>
@@ -331,6 +339,8 @@
       <div class="col-sm-8">
         <h2>SIMULATION</h2><br>
         <h4> In the absence of a physical or finished aircraft, and for safety reasons, initial testing needed to be done on a simulation. We developed a software in the loop simulation in order to develop our software package. The aircraft’s software stack exists within the ROS framework, which integrates directly with the 3D simulation software, Gazebo.</h4><br>
+        <p>Gazebo allows numerous customizations to be done to allow incredible flexibility in robot simulation. It also supports generation of measurements from a multitude of sensors, allowing customization for additive noise. Gazebo provides extensive documentation and examples of how to implement and simulate various situations. They provide direct access to their API with the use of plugins, allowing for development of control software for robots, sensors and even the environment.</p>
+        <p>Our simulation is an amalgamation of various packages, working seemlessly to deliver an aesthetically pleasing, highly functional, easily customizable, simulation environment for ROS software development. It integrates the Ardupilot SITL plugin, MAVROS, MAVLink/MAVProxy, ROS/GAZEBO, and many other packages, including our own software stack.</p>
       </div>
       <div class="col-sm-4">
         <h2></h2>
@@ -346,13 +356,11 @@
 <div id="flight" class="container-fluid ">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-sm-8 ">
-        <h2>TEST FLIGHT</h2>
-        <div class="text-center">
+      <div class="text-center">
+        <h2>TEST FLIGHT</h2><br>
         <video width="1000" height="500" controls>
           <source src="images/flight.mp4" type="video/mp4">
         </video>
-      </div>
       </div>
     </div>
   </div>
@@ -360,8 +368,7 @@
 
 <!-- Container (Services Section) -->
 <div id="team" class="container-fluid text-center bg-grey">
-  <h2>TEAM MEMBERS</h2>
-  <br>
+  <h2>TEAM MEMBERS</h2><br>
   <div class="row slideanim">
     <div class="col-sm-4">
       <div class="thumbnail">
